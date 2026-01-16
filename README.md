@@ -73,6 +73,9 @@ To analyze results or explore predictions interactively:
 # Activate virtual environment
 source .venv/bin/activate
 
+# Install libraries
+uv pip install -e .
+
 # Register Jupyter kernel
 python -m ipykernel install --user --name=drGT --display-name "Python (drGT)"
 
