@@ -85,6 +85,26 @@ jupyter notebook
 
 ---
 
+## 🔄 Retraining
+
+
+To retrain **drGT** from scratch, please refer to the scripts in the
+[`Test1_random_split`](./Test1_random_split/) and
+[`Test2_leave_X_out`](./Test2_leave_X_out/) directories (e.g., `run_drGAT.py`).
+These scripts support retraining under various experimental settings and
+data-splitting strategies.
+
+To use your own dataset, you will need the following inputs:
+- A **drug response matrix**
+- **Gene expression** data
+- **Drug chemical structures**, provided as **SMILES** strings
+
+You may adapt the `drGT/load_data` module to accommodate custom file formats
+or alternative data sources as required.
+
+
+---
+
 ## ⚡️ GPU Acceleration
 
 All experiments were conducted on **Linux with NVIDIA A100**.
