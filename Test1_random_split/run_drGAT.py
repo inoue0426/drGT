@@ -24,35 +24,117 @@ from drGT.sampler import BalancedSampler
 # Argument parser setup
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="Transformer",
-    help="Type of GNN layer"
+    "--method",
+    type=str,
+    choices=["GAT", "GATv2", "Transformer"],
+    default="Transformer",
+    help="Type of GNN layer",
 )
 parser.add_argument(
-    "--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="nci",
-    help="Dataset to use"
+    "--data",
+    type=str,
+    choices=["gdsc1", "gdsc2", "ctrp", "nci"],
+    default="nci",
+    help="Dataset to use",
 )
 # Set default values for each parameter
-parser.add_argument("--activation", type=str, default="relu", help="Activation function (default: relu)")
-parser.add_argument("--attention_dropout", type=float, default=0.1, help="Dropout rate for attention (default: 0.1)")
-parser.add_argument("--dropout1", type=float, default=0.1, help="Dropout rate for 1st layer (default: 0.1)")
-parser.add_argument("--dropout2", type=float, default=0.2, help="Dropout rate for 2nd layer (default: 0.2)")
-parser.add_argument("--dropout3", type=float, default=0.5, help="Dropout rate for 3rd layer (default: 0.5)")
-parser.add_argument("--epochs", type=int, default=1000, help="Number of epochs (default: 1000)")
-parser.add_argument("--final_mlp_layers", type=int, default=2, help="Number of layers in the final MLP (default: 2)")
-parser.add_argument("--heads", type=int, default=8, help="Number of heads (default: 8)")
-parser.add_argument("--hidden1", type=int, default=289, help="Number of hidden units in 1st layer (default: 289)")
-parser.add_argument("--hidden2", type=int, default=215, help="Number of hidden units in 2nd layer (default: 215)")
-parser.add_argument("--hidden3", type=int, default=66, help="Number of hidden units in 3rd layer (default: 66)")
 parser.add_argument(
-    "--is_zero_pad", action="store_true", default=True,
-    help="Specify if zero padding is used (default: True)"
+    "--activation", type=str, default="relu", help="Activation function (default: relu)"
 )
-parser.add_argument("--lr", type=float, default=0.00011219837311484963, help="Learning rate (default: 0.00011219837311484963)")
-parser.add_argument("--n_layers", type=int, default=2, help="Number of GNN layers (default: 2)")
-parser.add_argument("--norm_type", type=str, default="GraphNorm", choices=["GraphNorm", "BatchNorm", "LayerNorm"], help="Normalization type (default: GraphNorm)")
-parser.add_argument("--optimizer", type=str, default="Adam", choices=["Adam", "AdamW"], help="Optimizer (default: Adam)")
-parser.add_argument("--weight_decay", type=float, default=0.0023400993222972882, help="Weight decay (default: 0.0023400993222972882)")
-parser.add_argument("--scheduler", type=str, default="None", choices=["None", "Cosine"], help="Scheduler (default: None)")
+parser.add_argument(
+    "--attention_dropout",
+    type=float,
+    default=0.1,
+    help="Dropout rate for attention (default: 0.1)",
+)
+parser.add_argument(
+    "--dropout1",
+    type=float,
+    default=0.1,
+    help="Dropout rate for 1st layer (default: 0.1)",
+)
+parser.add_argument(
+    "--dropout2",
+    type=float,
+    default=0.2,
+    help="Dropout rate for 2nd layer (default: 0.2)",
+)
+parser.add_argument(
+    "--dropout3",
+    type=float,
+    default=0.5,
+    help="Dropout rate for 3rd layer (default: 0.5)",
+)
+parser.add_argument(
+    "--epochs", type=int, default=1000, help="Number of epochs (default: 1000)"
+)
+parser.add_argument(
+    "--final_mlp_layers",
+    type=int,
+    default=2,
+    help="Number of layers in the final MLP (default: 2)",
+)
+parser.add_argument("--heads", type=int, default=8, help="Number of heads (default: 8)")
+parser.add_argument(
+    "--hidden1",
+    type=int,
+    default=289,
+    help="Number of hidden units in 1st layer (default: 289)",
+)
+parser.add_argument(
+    "--hidden2",
+    type=int,
+    default=215,
+    help="Number of hidden units in 2nd layer (default: 215)",
+)
+parser.add_argument(
+    "--hidden3",
+    type=int,
+    default=66,
+    help="Number of hidden units in 3rd layer (default: 66)",
+)
+parser.add_argument(
+    "--is_zero_pad",
+    action="store_true",
+    default=True,
+    help="Specify if zero padding is used (default: True)",
+)
+parser.add_argument(
+    "--lr",
+    type=float,
+    default=0.00011219837311484963,
+    help="Learning rate (default: 0.00011219837311484963)",
+)
+parser.add_argument(
+    "--n_layers", type=int, default=2, help="Number of GNN layers (default: 2)"
+)
+parser.add_argument(
+    "--norm_type",
+    type=str,
+    default="GraphNorm",
+    choices=["GraphNorm", "BatchNorm", "LayerNorm"],
+    help="Normalization type (default: GraphNorm)",
+)
+parser.add_argument(
+    "--optimizer",
+    type=str,
+    default="Adam",
+    choices=["Adam", "AdamW"],
+    help="Optimizer (default: Adam)",
+)
+parser.add_argument(
+    "--weight_decay",
+    type=float,
+    default=0.0023400993222972882,
+    help="Weight decay (default: 0.0023400993222972882)",
+)
+parser.add_argument(
+    "--scheduler",
+    type=str,
+    default="None",
+    choices=["None", "Cosine"],
+    help="Scheduler (default: None)",
+)
 args = parser.parse_args()
 
 method = args.method
@@ -150,4 +232,3 @@ if __name__ == "__main__":
     print("5-fold evaluation results:")
     for k, v in zip(["AUROC", "AUPR", "F1", "ACC"], metrics_result["target_values"]):
         print(f"{k}: {v:.4f}")
-

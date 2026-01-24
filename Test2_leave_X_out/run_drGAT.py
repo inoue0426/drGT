@@ -3,11 +3,10 @@ import os
 import sys
 from pathlib import Path
 
-from joblib import Parallel, delayed
-
 import numpy as np
 import pandas as pd
 import torch
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
 # Add path to drGT package (compatible with both Singularity/local environments)
@@ -27,12 +26,23 @@ from drGT.sampler import NewSampler
 from drGT.utility import filter_target
 
 # Parse command-line options for method, data, mode, parallelism, and all hyperparameters
-parser = argparse.ArgumentParser(description="Run drGT with custom hyperparameters (no tuning)")
+parser = argparse.ArgumentParser(
+    description="Run drGT with custom hyperparameters (no tuning)"
+)
 
-parser.add_argument("--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="Transformer")
-parser.add_argument("--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="nci")
+parser.add_argument(
+    "--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="Transformer"
+)
+parser.add_argument(
+    "--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="nci"
+)
 parser.add_argument("--target_dim", type=int, choices=[0, 1], default=0)
-parser.add_argument("--n_jobs", type=int, default=3, help="Number of parallel jobs for target processing")
+parser.add_argument(
+    "--n_jobs",
+    type=int,
+    default=3,
+    help="Number of parallel jobs for target processing",
+)
 
 # Model hyperparameters (with Transformer defaults as specified)
 parser.add_argument("--activation", type=str, default="relu")
@@ -49,9 +59,16 @@ parser.add_argument("--hidden3", type=int, default=47)
 parser.add_argument("--is_zero_pad", type=bool, default=True)
 parser.add_argument("--lr", type=float, default=0.00010970329600928436)
 parser.add_argument("--n_layers", type=int, default=3)
-parser.add_argument("--norm_type", type=str, default="GraphNorm", choices=["GraphNorm", "BatchNorm", "LayerNorm"])
+parser.add_argument(
+    "--norm_type",
+    type=str,
+    default="GraphNorm",
+    choices=["GraphNorm", "BatchNorm", "LayerNorm"],
+)
 parser.add_argument("--optimizer", type=str, default="Adam", choices=["Adam", "AdamW"])
-parser.add_argument("--scheduler", type=str, default="Cosine", choices=["None", "Cosine"])
+parser.add_argument(
+    "--scheduler", type=str, default="Cosine", choices=["None", "Cosine"]
+)
 parser.add_argument("--weight_decay", type=float, default=0.001773507293085185)
 parser.add_argument("--T_max", type=int, default=183)
 
@@ -85,6 +102,7 @@ params = {
     "T_max": args.T_max,
 }
 
+
 def drGT_new(
     res,
     null_mask,
@@ -111,10 +129,11 @@ def drGT_new(
     )
 
     # Perform training for a single target
-    (_, _, _, best_val_labels, best_val_prob, best_metrics, _, _, _) = drGT.train(
+    _, _, _, best_val_labels, best_val_prob, best_metrics, _, _, _ = drGT.train(
         sampler, params=params, device=device, verbose=False
     )
     return best_val_labels, best_val_prob
+
 
 if __name__ == "__main__":
     # Load data according to provided hyperparameters
@@ -140,7 +159,9 @@ if __name__ == "__main__":
     passed_targets = []
     skipped_targets = []
     for target_index in range(samples):
-        label_vec = res.iloc[target_index] if target_dim == 0 else res.iloc[:, target_index]
+        label_vec = (
+            res.iloc[target_index] if target_dim == 0 else res.iloc[:, target_index]
+        )
         passed, reason, pos, neg, total = filter_target(label_vec)
         if passed:
             passed_targets.append(target_index)
@@ -179,8 +200,12 @@ if __name__ == "__main__":
     true_datas = pd.DataFrame()
     predict_datas = pd.DataFrame()
     for true_data, predict_data in results:
-        true_datas = pd.concat([true_datas, pd.DataFrame(true_data).T], ignore_index=True)
-        predict_datas = pd.concat([predict_datas, pd.DataFrame(predict_data).T], ignore_index=True)
+        true_datas = pd.concat(
+            [true_datas, pd.DataFrame(true_data).T], ignore_index=True
+        )
+        predict_datas = pd.concat(
+            [predict_datas, pd.DataFrame(predict_data).T], ignore_index=True
+        )
 
     # Calculate evaluation metrics
     metrics_result = compute_metrics_stats(
@@ -192,4 +217,3 @@ if __name__ == "__main__":
 
     print("Metrics:")
     print(metrics_result)
-
