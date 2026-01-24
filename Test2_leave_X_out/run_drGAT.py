@@ -81,7 +81,7 @@ def drGT_new(
         A_dg,
     )
 
-    (_, _, _, best_val_labels, best_val_prob, best_metrics, _, _, _) = drGT.train(
+    _, _, _, best_val_labels, best_val_prob, best_metrics, _, _, _ = drGT.train(
         sampler, params=params, device=device, verbose=False
     )
 
