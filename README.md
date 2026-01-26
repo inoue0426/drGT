@@ -88,19 +88,19 @@ jupyter notebook
 ## 🔄 Retraining
 
 
-To retrain **drGT** from scratch, please refer to the scripts in the
+To retrain **drGT** from scratch, please use the scripts provided in the
 [`Test1_random_split`](./Test1_random_split/) and
 [`Test2_leave_X_out`](./Test2_leave_X_out/) directories (e.g., `run_drGAT.py`).
-These scripts support retraining under various experimental settings and
+These scripts allow you to retrain the model under various experimental setups and
 data-splitting strategies.
 
-To use your own dataset, you will need the following inputs:
-- A **drug response matrix**
-- **Gene expression** data
-- **Drug chemical structures**, provided as **SMILES** strings
+If you wish to use your own dataset, please prepare the following:
+- A **drug response matrix** (drugs × cell lines)
+- A **gene expression matrix** (cell lines × genes)
+- **Drug chemical structures** as **SMILES** strings (column 1: Drug, column 2: SMILES)
 
-You may adapt the `drGT/load_data` module to accommodate custom file formats
-or alternative data sources as required.
+You can modify the `drGT/load_data` module to support your custom file formats
+or alternative data sources as needed.
 
 
 ---
