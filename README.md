@@ -87,7 +87,6 @@ jupyter notebook
 
 ## 🔄 Retraining
 
-
 To retrain **drGT** from scratch, please use the scripts provided in the
 [`Test1_random_split`](./Test1_random_split/) and
 [`Test2_leave_X_out`](./Test2_leave_X_out/) directories (e.g., `run_drGAT.py`).
@@ -102,6 +101,19 @@ If you wish to use your own dataset, please prepare the following:
 You can modify the `drGT/load_data` module to support your custom file formats
 or alternative data sources as needed.
 
+---
+
+## 🔄 When is Retraining Required?
+
+You do **NOT** need retraining if:
+- You use the same dataset and split as the pretrained model
+- Model architecture and hyperparameters are unchanged
+
+Retraining **IS REQUIRED** if:
+- You use a different dataset or add new drugs/cell lines
+- You change data splitting strategy (e.g., leave-drug-out)
+- You modify model architecture or hyperparameters
+- You aim to interpret attention scores on your own data
 
 ---
 
