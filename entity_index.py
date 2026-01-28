@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, List, Optional, Tuple
-import re
-
 import json
+import re
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
 # ============================================================
 # Normalization utilities
 # ============================================================
+
 
 def normalize_cell_line(name: str) -> str:
     """
@@ -52,11 +52,12 @@ LoadDataFn = Callable[..., Tuple]
 # Cell line index
 # ============================================================
 
+
 @dataclass(frozen=True)
 class CellLineIndex:
     datasets: Tuple[str, ...]
-    global_index: Dict[str, Dict[str, str]]          # norm -> {dataset: raw}
-    entity_map_by_ds: Dict[str, Dict[str, str]]      # dataset -> {norm: raw}
+    global_index: Dict[str, Dict[str, str]]  # norm -> {dataset: raw}
+    entity_map_by_ds: Dict[str, Dict[str, str]]  # dataset -> {norm: raw}
 
     def all(self) -> List[str]:
         """All canonical (normalized) cell line names."""
@@ -150,11 +151,12 @@ def build_cell_line_index(
 # Drug index
 # ============================================================
 
+
 @dataclass(frozen=True)
 class DrugIndex:
     datasets: Tuple[str, ...]
-    global_index: Dict[str, Dict[str, str]]          # norm -> {dataset: raw}
-    entity_map_by_ds: Dict[str, Dict[str, str]]      # dataset -> {norm: raw}
+    global_index: Dict[str, Dict[str, str]]  # norm -> {dataset: raw}
+    entity_map_by_ds: Dict[str, Dict[str, str]]  # dataset -> {norm: raw}
 
     def all(self) -> List[str]:
         """All canonical (normalized) drug names."""
@@ -198,6 +200,7 @@ class DrugIndex:
             global_index=obj["global_index"],
             entity_map_by_ds=obj["entity_map_by_ds"],
         )
+
 
 def build_drug_index(
     datasets: Iterable[str],
