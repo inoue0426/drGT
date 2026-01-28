@@ -59,6 +59,8 @@ probs, true_labels, attention = drGT.predict('best_model.pt', sampler, params)
 evaluate_predictions(true_labels, probs)
 ```
 
+> ℹ️ If you only want to generate predictions (inference) without reporting performance metrics, you can use the same pretrained model and skip evaluation.
+
 ✅ Ensure that `params` match the pretrained model's configuration (e.g., GNN layer, hidden sizes, etc.).
 
 📓 For a full example, see [`predict_with_pretrained_model.ipynb`](predict_with_pretrained_model.ipynb).
