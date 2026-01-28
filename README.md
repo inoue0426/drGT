@@ -65,6 +65,8 @@ evaluate_predictions(true_labels, probs)
 
 📓 For a full example, see [`predict_with_pretrained_model.ipynb`](predict_with_pretrained_model.ipynb).
 
+You can use this pretrained model for existing drugs and cell lines. See [`cell_drug_availability_across_datasets.ipynb`](cell_drug_availability_across_datasets.ipynb) to check which cell lines and drugs are available across datasets.
+
 ---
 
 ## ⚙️ Interactive Use with Jupyter
