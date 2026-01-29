@@ -5,7 +5,6 @@ import sys
 import torch
 from sklearn.model_selection import KFold
 
-
 # path setup (your repo layout assumption: this script is runnable from repo)
 current_dir = os.getcwd()
 parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
@@ -13,10 +12,10 @@ sys.path.append(parent_dir)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+from drGT import drGT  # drGT.train is used
 from drGT.load_data import load_data
 from drGT.myutils import get_all_edges_and_labels
 from drGT.sampler import BalancedSampler
-from drGT import drGT  # drGT.train is used
 
 # yaml loader
 try:
@@ -30,7 +29,9 @@ def load_yaml_params(config_path: str, data: str, method: str) -> dict:
         cfg = yaml.safe_load(f)
 
     if data not in cfg:
-        raise KeyError(f"Dataset '{data}' not found in {config_path}. Keys: {list(cfg.keys())}")
+        raise KeyError(
+            f"Dataset '{data}' not found in {config_path}. Keys: {list(cfg.keys())}"
+        )
 
     if method not in cfg[data]:
         raise KeyError(
@@ -40,7 +41,9 @@ def load_yaml_params(config_path: str, data: str, method: str) -> dict:
 
     params = cfg[data][method]
     if not isinstance(params, dict):
-        raise ValueError(f"Config entry {data}->{method} must be a dict, got {type(params)}")
+        raise ValueError(
+            f"Config entry {data}->{method} must be a dict, got {type(params)}"
+        )
     return params
 
 
@@ -73,17 +76,29 @@ def apply_defaults(params: dict) -> dict:
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config", type=str, default="configs/test1_params.yaml",
-                        help="YAML config path (default: configs/test1_params.yaml)")
-    parser.add_argument("--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="ctrp")
-    parser.add_argument("--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="GAT")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="configs/test1_params.yaml",
+        help="YAML config path (default: configs/test1_params.yaml)",
+    )
+    parser.add_argument(
+        "--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="ctrp"
+    )
+    parser.add_argument(
+        "--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="GAT"
+    )
     parser.add_argument("--is_zero_pad", action="store_true", default=True)
 
     # pretrain split + save
     parser.add_argument("--val_ratio", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--out", type=str, default=None,
-                        help="Output checkpoint path. Default: pretrained_{data}_{method}.pt")
+    parser.add_argument(
+        "--out",
+        type=str,
+        default=None,
+        help="Output checkpoint path. Default: pretrained_{data}_{method}.pt",
+    )
 
     # optional CLI overrides (if you pass them, they overwrite YAML)
     parser.add_argument("--epochs", type=int, default=None)
@@ -112,17 +127,33 @@ def main():
 
     # 2) apply CLI overrides if provided
     for k in [
-        "epochs", "lr", "weight_decay", "heads", "hidden1", "hidden2", "hidden3",
-        "n_layers", "final_mlp_layers", "attention_dropout",
-        "dropout1", "dropout2", "dropout3",
-        "activation", "optimizer", "scheduler", "norm_type",
+        "epochs",
+        "lr",
+        "weight_decay",
+        "heads",
+        "hidden1",
+        "hidden2",
+        "hidden3",
+        "n_layers",
+        "final_mlp_layers",
+        "attention_dropout",
+        "dropout1",
+        "dropout2",
+        "dropout3",
+        "activation",
+        "optimizer",
+        "scheduler",
+        "norm_type",
     ]:
         v = getattr(args, k)
         if v is not None:
             params[k] = v
 
     # normalize "None" scheduler string
-    if isinstance(params.get("scheduler"), str) and params["scheduler"].lower() == "none":
+    if (
+        isinstance(params.get("scheduler"), str)
+        and params["scheduler"].lower() == "none"
+    ):
         params["scheduler"] = None
 
     # 3) load data
@@ -177,7 +208,7 @@ def main():
         params=params,
         device=device,
         verbose=True,
-        is_save=False,   # Set to False if not using internal save in drGT.train
+        is_save=False,  # Set to False if not using internal save in drGT.train
     )
 
     # Recommended: Save state_dict + params together (for reproducibility)
@@ -194,6 +225,7 @@ def main():
         out_path,
     )
     print(f"Saved pretrained checkpoint: {out_path}")
+
 
 if __name__ == "__main__":
     main()
