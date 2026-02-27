@@ -103,7 +103,7 @@ def normalize_similarity_matrix(df, gamma=None):
     return normalized_df
 
 
-# --- フィルター判定用関数 ---
+# --- Filter decision helper ---
 def filter_target(label_vec, min_total=10, min_pos_ratio=0.02, min_neg_ratio=0.02):
     valid_idx = ~np.isnan(label_vec)
     label_vec = label_vec[valid_idx]

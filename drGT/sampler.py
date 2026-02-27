@@ -25,7 +25,7 @@ class BalancedSampler:
         S_g,
         A_cg,
         A_dg,
-        PATH=None,  # ← デフォルトは None
+        PATH=None,  # Default is None
     ):
         self.PATH = PATH
         self.adj_mat_original = adj_mat_original
@@ -33,13 +33,13 @@ class BalancedSampler:
         self.S_d, self.S_c, self.S_g = S_d, S_c, S_g
         self.A_cg, self.A_dg = A_cg, A_dg
 
-        # インデックスとラベルの対応表
+        # Index-to-label mapping
         self.row_index = list(adj_mat_original.index)
         self.col_index = list(adj_mat_original.columns)
         self.row_map = {i: name for i, name in enumerate(self.row_index)}
         self.col_map = {i: name for i, name in enumerate(self.col_index)}
 
-        # 残りの処理はそのまま
+        # Remaining processing unchanged
         self.all_edges = all_edges
         self.all_labels = all_labels
 
@@ -167,8 +167,8 @@ class BalancedSampler:
 #         self.test_labels = self.get_labels(is_train=False)
 
 #     def set_seed(self):
-#         np.random.seed(self.seed)  # NumPyのシードを設定
-#         torch.manual_seed(self.seed)  # PyTorchのシードを設定
+#         np.random.seed(self.seed)  # Set NumPy seed
+#         torch.manual_seed(self.seed)  # Set PyTorch seed
 
 #     def get_train_labels(self, is_train=False):
 #         """Get labels for training or testing data"""
@@ -296,7 +296,7 @@ class NewSampler:
         PATH=None,
     ):
         self.adj_mat_original = original_adj_mat
-        self.adj_mat = original_adj_mat.values  # ここで確実に NumPy に変換
+        self.adj_mat = original_adj_mat.values  # Ensure NumPy conversion here
         self.null_mask = (
             null_mask.values if isinstance(null_mask, pd.DataFrame) else null_mask
         )
@@ -345,9 +345,9 @@ class NewSampler:
                 np.save(idxs_path, idxs)
 
     def _get_target_indices(self, matrix, value):
-        if self.dim == 0:  # 行（Cell）
+        if self.dim == 0:  # Row (Cell)
             return np.where(matrix[self.target_index, :] == value)[0]
-        else:  # 列（Drug）
+        else:  # Column (Drug)
             return np.where(matrix[:, self.target_index] == value)[0]
 
     def _sample_target_test_index(self):
@@ -375,16 +375,16 @@ class NewSampler:
 
         target_neg_index = self._get_target_indices(neg_value, 1)
 
-        if self.dim == 0:  # Cell（行）をターゲット
+        if self.dim == 0:  # Target Cell (row)
             neg_test_mask[self.target_index, target_neg_index] = 1
             neg_value[self.target_index, :] = 0
-        else:  # Drug（列）をターゲット
+        else:  # Target Drug (column)
             neg_test_mask[target_neg_index, self.target_index] = 1
             neg_value[:, self.target_index] = 0
 
         train_mask = (self.train_data.numpy() + neg_value).astype(bool)
         test_mask = (self.test_data.numpy() + neg_test_mask).astype(bool)
-        # Null Maskを適用
+        # Apply null mask
         train_mask[self.null_mask == 1] = False
         return torch.from_numpy(train_mask), torch.from_numpy(test_mask)
 
@@ -412,8 +412,8 @@ class NewSampler:
     def _update_unified_matrix(self):
         A_dc = pd.DataFrame(
             self.train_data.numpy(),
-            index=self.adj_mat_original.index,  # 正しいCell順
-            columns=self.adj_mat_original.columns,  # 正しいDrug順
+            index=self.adj_mat_original.index,  # Correct Cell order
+            columns=self.adj_mat_original.columns,  # Correct Drug order
         ).fillna(0)
 
         indexes = list(A_dc.index) + list(self.A_cg.columns) + list(self.A_dg.index)

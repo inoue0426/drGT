@@ -73,7 +73,7 @@ def get_model_params(
 
 
 def get_all_edges_and_labels(res, null_mask):
-    # 形状チェック
+    # Shape check
     assert res.shape == null_mask.shape, "res and null_mask must have the same shape"
 
     # Positive: res == 1 AND null_mask == 0
@@ -88,7 +88,7 @@ def get_all_edges_and_labels(res, null_mask):
     neg_edges = np.vstack((neg_row, neg_col)).T
     neg_labels = np.zeros(len(neg_edges), dtype=int)
 
-    # 統合して返す
+    # Merge and return
     all_edges = np.vstack((pos_edges, neg_edges))
     all_labels = np.concatenate((pos_labels, neg_labels))
     return all_edges, all_labels
@@ -671,8 +671,8 @@ def calculate_train_test_index(
 
 def dir_path(k=1):
     """
-    :param k: 当前路径后退级数
-    :return: 后退k级后的目录
+    :param k: Number of directory levels to go back from the current path
+    :return: Directory path after moving back k levels
     """
     fpath = os.path.realpath(__file__)
     dir_name = os.path.dirname(fpath)

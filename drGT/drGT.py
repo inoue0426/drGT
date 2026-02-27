@@ -463,7 +463,7 @@ def train_one_epoch(
         outputs, attention = model(
             drug, cell, gene, edge_index, edge_attr, train_drug, train_cell
         )
-        # 通常の分類タスクの損失
+        # Loss for the standard classification task
         loss = criterion(outputs.squeeze(), train_labels.float())
 
     if scaler:

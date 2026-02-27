@@ -62,7 +62,7 @@ class drGT(Module):
         activations = {
             "relu": nn.ReLU(),
             "gelu": nn.GELU(),
-            "swish": nn.SiLU(),  # PyTorch 1.7+で正式実装
+            "swish": nn.SiLU(),  # Officially supported in PyTorch 1.7+
         }
         return activations.get(name.lower(), nn.ReLU())
 
@@ -221,7 +221,7 @@ def train(
             device,
         )
 
-        # スケジューラの更新
+        # Update scheduler
         if scheduler is not None:
             if isinstance(scheduler, lr_scheduler.ReduceLROnPlateau):
                 scheduler.step(val_losses[-1])
@@ -348,10 +348,10 @@ def train_one_epoch(
     train_acc = (predict == train_labels).sum().item() / len(predict)
     train_accs.append(train_acc)
 
-    # train_one_epoch関数内
+    # Inside train_one_epoch
     scaler.scale(loss).backward()
-    scaler.unscale_(optimizer)  # スケーリング解除後にクリッピング
-    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # 勾配クリッピング
+    scaler.unscale_(optimizer)  # Clip after unscaling
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
     scaler.step(optimizer)
     scaler.update()
 
@@ -376,7 +376,7 @@ def validate_model(
         #         with autocast(device_type=device.type):
         outputs = model(drug, cell, gene, edge_index, edge_attr, val_drug, val_cell)
 
-        # NaNチェック
+        # NaN check
         if torch.isnan(outputs).any():
             print("NaN detected in model outputs!")
             print("Outputs:", outputs)
@@ -384,7 +384,7 @@ def validate_model(
         loss = criterion(outputs.squeeze(), val_labels.float())
         val_losses.append(loss.item())
 
-        outputs = outputs.squeeze().float().cpu()  # ここで次元を調整
+        outputs = outputs.squeeze().float().cpu()  # Adjust dimensions here
         probabilities = torch.sigmoid(outputs).numpy()
         predict = (probabilities > 0.5).astype(int)
         val_labels = val_labels.cpu().numpy()

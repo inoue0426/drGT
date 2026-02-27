@@ -31,9 +31,9 @@ def get_result(true, pred, data):
 
         pred_labels = np.round(pred_values)
 
-        # 主要メトリクスの計算
+        # Core metrics
         metrics = {
-            # 基本指標
+            # Basic metrics
             "ACC": accuracy_score(true_labels, pred_labels),
             "Precision": precision_score(true_labels, pred_labels, zero_division=0),
             "Recall": recall_score(true_labels, pred_labels, zero_division=0),
@@ -42,21 +42,21 @@ def get_result(true, pred, data):
             ),
             "F1": f1_score(true_labels, pred_labels, zero_division=0),
             "F2": fbeta_score(true_labels, pred_labels, beta=2, zero_division=0),
-            # 不均衡データ向け
+            # Imbalance-aware
             "Balanced ACC": balanced_accuracy_score(true_labels, pred_labels),
             "G-Mean": np.sqrt(
                 recall_score(true_labels, pred_labels, zero_division=0)
                 * recall_score(true_labels, pred_labels, pos_label=0, zero_division=0)
             ),
-            # 確率ベース
+            # Probability-based
             "AUROC": roc_auc_score(true_labels, pred_values),
             "AUPR": average_precision_score(true_labels, pred_values),
             "LogLoss": log_loss(true_labels, pred_values),
             "Brier": brier_score_loss(true_labels, pred_values),
-            # 一致度指標
+            # Agreement metrics
             "MCC": matthews_corrcoef(true_labels, pred_labels),
             "Kappa": cohen_kappa_score(true_labels, pred_labels),
-            # コスト考慮型
+            # Cost-sensitive
             "Youden J": roc_auc_score(true_labels, pred_values) * 2 - 1,
             "Cost Ratio": (
                 precision_score(true_labels, pred_labels, zero_division=0)
@@ -65,11 +65,11 @@ def get_result(true, pred, data):
         }
         res = pd.concat([res, pd.DataFrame([metrics])])
 
-    # 統計量の計算
+    # Summary statistics
     means = res.mean()
     stds = res.std()
 
-    # フォーマット整形
+    # Format output
     formatted = means.map("{:.3f}".format) + " (± " + stds.map("{:.3f}".format) + ")"
 
     result_table = pd.DataFrame({data.upper(): formatted.values})
@@ -80,25 +80,25 @@ def get_result(true, pred, data):
 
 def compute_metrics_stats(true, pred, trial=None, data=None, target_metrics=None):
     """
-    Optuna統合用メトリクス計算関数
+    Metrics computation helper for Optuna integration.
 
     Parameters:
-    trial (optuna.Trial): Optunaトライアルオブジェクト
-    true (pd.DataFrame): 正解ラベルのDataFrame
-    pred (pd.DataFrame): 予測値のDataFrame
-    data (str): データセット識別子（任意）
-    target_metrics (list): 最適化対象のメトリクスリスト
+    trial (optuna.Trial): Optuna trial object
+    true (pd.DataFrame): DataFrame of ground-truth labels
+    pred (pd.DataFrame): DataFrame of prediction values
+    data (str): Dataset identifier (optional)
+    target_metrics (list): Metrics to optimize
 
     Returns:
-    dict: メトリクス統計量の辞書
+    dict: Metric summary statistics
     """
-    # デフォルト対象メトリクス
+    # Default target metrics
     if target_metrics is None:
         target_metrics = ["ACC", "F1", "AUROC", "AUPR", "MCC"]
 
     res = pd.DataFrame()
     for i in range(true.shape[0]):
-        # データ前処理
+        # Preprocess data
         true_labels = true.loc[i].dropna()
         pred_values = pred.loc[i].dropna()
 
@@ -108,7 +108,7 @@ def compute_metrics_stats(true, pred, trial=None, data=None, target_metrics=None
 
         pred_labels = np.round(pred_values).astype(int)
 
-        # メトリクス計算
+        # Compute metrics
         metrics = {
             "ACC": accuracy_score(true_labels, pred_labels),
             "Precision": precision_score(true_labels, pred_labels, zero_division=0),
@@ -126,13 +126,13 @@ def compute_metrics_stats(true, pred, trial=None, data=None, target_metrics=None
         }
         res = pd.concat([res, pd.DataFrame([metrics])], ignore_index=True)
 
-    # 統計量計算
+    # Summary statistics
     stats = {"means": res.mean().to_dict(), "stds": res.std().to_dict()}
 
     if trial is not None:
-        # Optunaへの結果保存
+        # Store results in Optuna
         for metric in stats["means"]:
-            # ユーザー属性として保存
+            # Save as user attributes
             trial.set_user_attr(f"{metric}_mean", float(stats["means"][metric]))
             trial.set_user_attr(f"{metric}_std", float(stats["stds"][metric]))
 
@@ -140,7 +140,7 @@ def compute_metrics_stats(true, pred, trial=None, data=None, target_metrics=None
                 print(f"{metric}_mean: {stats['means'][metric]:.4f}")
                 print(f"{metric}_std: {stats['stds'][metric]:.4f}")
 
-    # フォーマット済み結果（オプション）
+    # Formatted results (optional)
     formatted_stats = {
         metric: f"{stats['means'][metric]:.3f} (±{stats['stds'][metric]:.3f})"
         for metric in stats["means"]
