@@ -9,7 +9,7 @@ Official implementation of **drGT**, published in [BMC Bioinformatics (2026)](ht
 
 ![](Figs/Fig1.png)
 
-`drGT` utilizes attention-based GNNs (e.g., GAT, GATv2, Transformer) to model a heterogeneous graph of drugs, cells, and genes. It predicts drug sensitivity and uncovers gene-level contributions via attention mechanisms.
+`drGT` is a research tool for predicting whether a cancer cell line is sensitive or resistant to a drug and prioritizing genes for follow-up investigation. It combines measured drug responses, gene expression, drug chemical structures, and known drug-target relationships in a drug-cell-gene graph. Attention-based graph neural networks produce sensitivity predictions and drug-gene attention scores, which can be explored alongside biological knowledge to generate hypotheses about drug response mechanisms. These scores guide investigation; they do not establish causal mechanisms.
 
 ---
 
