@@ -1,7 +1,14 @@
 # 🧬 drGT
 
-Official implementation of **drGT: Attention-Guided Gene Assessment for Drug Response in Drug-Cell-Gene Heterogeneous Network**
+Official implementation of **drGT: Interpretable Drug Response Prediction with Attention-Guided Gene Attribution on a Drug-Cell-Gene Heterogeneous Graph**, published in [BMC Bioinformatics (2026)](https://doi.org/10.1186/s12859-026-06417-z).
+[![BMC Bioinformatics](https://img.shields.io/badge/BMC%20Bioinformatics-2026-0073B1)](https://doi.org/10.1186/s12859-026-06417-z)
 [![arXiv](https://img.shields.io/badge/arXiv-2405.08979-b31b1b.svg)](https://arxiv.org/abs/2405.08979)
+[![Formatting](https://github.com/inoue0426/drGT/actions/workflows/python-format.yml/badge.svg?branch=main)](https://github.com/inoue0426/drGT/actions/workflows/python-format.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue)](pyproject.toml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1)](https://github.com/PyCQA/isort)
+[![uv](https://img.shields.io/badge/uv-astral-6F2CAC)](https://github.com/astral-sh/uv)
 
 ![](Figs/Fig1.png)
 
@@ -162,12 +169,19 @@ We're happy to help and collaborate!
 
 ## 📖 Citation
 
+If you use drGT in your research, please cite the published article in [BMC Bioinformatics](https://doi.org/10.1186/s12859-026-06417-z).
+
 ```bibtex
-@article{inoue2024drgat,
-  title={drGT: Attention-Guided Gene Assessment of Drug Response Utilizing a Drug-Cell-Gene Heterogeneous Network},
-  author={Inoue, Yoshitaka and Lee, Hunmin and Fu, Tianfan and Luna, Augustin},
-  journal={arXiv preprint arXiv:2405.08979},
-  year={2024}
+@article{inoue2026drgt,
+  title={drGT: Interpretable Drug Response Prediction with Attention-Guided Gene Attribution on a Drug-Cell-Gene Heterogeneous Graph},
+  author={Inoue, Yoshitaka and Lee, Hunmin and Fu, Tianfan and Kuang, Rui and Luna, Augustin},
+  journal={BMC Bioinformatics},
+  volume={27},
+  number={1},
+  pages={204},
+  year={2026},
+  doi={10.1186/s12859-026-06417-z},
+  url={https://doi.org/10.1186/s12859-026-06417-z}
 }
 ```
 
