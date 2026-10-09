@@ -33,7 +33,6 @@ def load_and_combine_chunks(pattern, axis=0):
 def get_morgan_fingerprint(SMILES):
     # Initialize parser parameters
     params = Chem.SmilesParserParams()
-    params.useChirality = True  # Preserve stereochemistry information
     params.removeHs = False  # Keep hydrogen atoms
     mfp = []
 
@@ -53,7 +52,6 @@ def get_morgan_fingerprint(SMILES):
                 # Update parameters for this attempt
                 current_params = Chem.SmilesParserParams()
                 current_params.sanitize = attempt["sanitize"]
-                current_params.useChirality = params.useChirality
                 current_params.removeHs = params.removeHs
 
                 # Molecule object creation

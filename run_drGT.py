@@ -37,110 +37,128 @@ from drGT.metrics import compute_metrics_stats
 from drGT.myutils import get_all_edges_and_labels, get_model_params
 from drGT.sampler import BalancedSampler
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="GATv2"
-)
-parser.add_argument(
-    "--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="nci"
-)
-parser.add_argument("--task", type=str, choices=["test1", "test2"], default="test1")
-parser.add_argument(
-    "--cell_or_drug",
-    type=str,
-    choices=["cell", "drug"],
-    required=False,
-    help="Only required for test2",
-)
-args = parser.parse_args()
 
-method = args.method
-data = args.data
-task = args.task
-cell_or_drug = args.cell_or_drug
+def main() -> None:
+    """Run the short random-split training and evaluation demo.
 
-if task == "test2":
-    if cell_or_drug is None:
-        raise ValueError("`--cell_or_drug` is required for test2 task.")
-    params = get_model_params(task, data, method, cell_or_drug)
-else:
+    Args:
+        None. Command-line arguments are parsed here.
+
+    Returns:
+        None.
+    """
+    parser = argparse.ArgumentParser(
+        description="Three-epoch random-split training demo for drGT."
+    )
+    parser.add_argument(
+        "--method", type=str, choices=["GAT", "GATv2", "Transformer"], default="GATv2"
+    )
+    parser.add_argument(
+        "--data", type=str, choices=["gdsc1", "gdsc2", "ctrp", "nci"], default="nci"
+    )
+    parser.add_argument("--task", type=str, choices=["test1", "test2"], default="test1")
+    parser.add_argument(
+        "--cell_or_drug",
+        type=str,
+        choices=["cell", "drug"],
+        required=False,
+        help="Use the dedicated Test2 runner for leave-out evaluation",
+    )
+    args = parser.parse_args()
+
+    if args.task != "test1" or args.cell_or_drug is not None:
+        parser.error(
+            "This demo supports only test1 (random split). For leave-cell-out "
+            "or leave-drug-out, use Test2_leave_X_out/run_drGAT.py "
+            "with --target_dim 0 (cell) or 1 (drug)."
+        )
+
+    method = args.method
+    data = args.data
+    task = args.task
+
     params = get_model_params(task, data, method)
 
-
-# Load data
-(
-    drugAct,
-    null_mask,
-    S_d,
-    S_c,
-    S_g,
-    _,
-    _,
-    _,
-    A_cg,
-    A_dg,
-) = load_data(data, is_zero_pad=params["is_zero_pad"])
-
-# Update parameters
-params.update(
-    {
-        "n_drug": S_d.shape[0],
-        "n_cell": S_c.shape[0],
-        "n_gene": S_g.shape[0],
-        "gnn_layer": method,
-    }
-)
-
-##### Sample #####
-
-params.update(
-    {
-        "epochs": 3,
-    }
-)
-
-# Training and evaluation
-all_edges, all_labels = get_all_edges_and_labels(drugAct, null_mask)
-kf = KFold(n_splits=5, shuffle=True, random_state=42)
-
-true_datas = pd.DataFrame()
-predict_datas = pd.DataFrame()
-
-for train_idx, test_idx in tqdm(kf.split(all_edges)):
-    sampler = BalancedSampler(
+    # Load data
+    (
         drugAct,
-        all_edges,
-        all_labels,
-        train_idx,
-        test_idx,
         null_mask,
         S_d,
         S_c,
         S_g,
+        _,
+        _,
+        _,
         A_cg,
         A_dg,
+    ) = load_data(data, is_zero_pad=params["is_zero_pad"])
+
+    # Update parameters
+    params.update(
+        {
+            "n_drug": S_d.shape[0],
+            "n_cell": S_c.shape[0],
+            "n_gene": S_g.shape[0],
+            "gnn_layer": method,
+        }
     )
 
-    (
-        model,
-        best_train_attention,
-        best_val_attention,
-        true_data,
-        predict_data,
-        _,
-    ) = drGT.train(sampler, params=params, device=device, verbose=True)
+    ##### Sample #####
 
-    true_datas = pd.concat([true_datas, pd.DataFrame(true_data).T], ignore_index=True)
-    predict_datas = pd.concat(
-        [predict_datas, pd.DataFrame(predict_data).T], ignore_index=True
+    params.update(
+        {
+            "epochs": 3,
+        }
     )
 
-metrics_result = compute_metrics_stats(
-    true=true_datas,
-    pred=predict_datas,
-    target_metrics=["AUROC", "AUPR", "F1", "ACC"],
-)
+    # Training and evaluation
+    all_edges, all_labels = get_all_edges_and_labels(drugAct, null_mask)
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
-for metric in ["ACC", "Precision", "Recall", "F1", "AUROC", "AUPR"]:
-    if metric in metrics_result["formatted"]:
-        print(f"{metric:14s}: {metrics_result['formatted'][metric]}")
+    true_datas = pd.DataFrame()
+    predict_datas = pd.DataFrame()
+
+    for train_idx, test_idx in tqdm(kf.split(all_edges)):
+        sampler = BalancedSampler(
+            drugAct,
+            all_edges,
+            all_labels,
+            train_idx,
+            test_idx,
+            null_mask,
+            S_d,
+            S_c,
+            S_g,
+            A_cg,
+            A_dg,
+        )
+
+        (
+            model,
+            best_train_attention,
+            best_val_attention,
+            true_data,
+            predict_data,
+            _,
+        ) = drGT.train(sampler, params=params, device=device, verbose=True)
+
+        true_datas = pd.concat(
+            [true_datas, pd.DataFrame(true_data).T], ignore_index=True
+        )
+        predict_datas = pd.concat(
+            [predict_datas, pd.DataFrame(predict_data).T], ignore_index=True
+        )
+
+    metrics_result = compute_metrics_stats(
+        true=true_datas,
+        pred=predict_datas,
+        target_metrics=["AUROC", "AUPR", "F1", "ACC"],
+    )
+
+    for metric in ["ACC", "Precision", "Recall", "F1", "AUROC", "AUPR"]:
+        if metric in metrics_result["formatted"]:
+            print(f"{metric:14s}: {metrics_result['formatted'][metric]}")
+
+
+if __name__ == "__main__":
+    main()

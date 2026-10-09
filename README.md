@@ -21,10 +21,10 @@ git clone https://github.com/inoue0426/drGT.git
 cd drGT
 ```
 
-2. Run the prediction script directly (CPU or GPU):
+2. Run a short training demo (CPU or GPU):
 
 ```bash
-./run_drGT.py --task test2 --data nci --method GATv2 --cell_or_drug cell
+uv run --script run_drGT.py --task test1 --data nci --method GATv2
 ```
 
 > ✅ If `uv` is not installed:
@@ -32,7 +32,9 @@ cd drGT
 > pip install uv
 > ```
 
-3. Example output:
+This demo trains for **3 epochs per fold** using a **5-fold random split** of observed drug-cell pairs. It checks the training workflow; it does not run pretrained inference or reproduce the paper's full-training results. For inference without training, use the pretrained notebook below. For leave-cell-out or leave-drug-out evaluation, use [`Test2_leave_X_out/run_drGAT.py`](Test2_leave_X_out/run_drGAT.py); the demo runner only supports `test1`.
+
+3. Example output from the short demo (values vary between runs):
 
 ```
 Using device: cpu
@@ -55,7 +57,7 @@ To evaluate without retraining:
 from drGT import drGT
 from drGT.metrics import evaluate_predictions
 
-probs, true_labels, attention = drGT.predict('best_model.pt', sampler, params)
+probs, true_labels, attention = drGT.predict('best_model_nci.pt', sampler, params)
 evaluate_predictions(true_labels, probs)
 ```
 
@@ -74,11 +76,12 @@ You can use this pretrained model for existing drugs and cell lines. See [`cell_
 To analyze results or explore predictions interactively:
 
 ```bash
-# Activate virtual environment
+# Create and activate a project environment
+uv venv --python 3.10
 source .venv/bin/activate
 
 # Install libraries
-uv pip install -e .
+uv pip install -e . jupyter
 
 # Register Jupyter kernel
 python -m ipykernel install --user --name=drGT --display-name "Python (drGT)"
@@ -167,3 +170,4 @@ We're happy to help and collaborate!
   year={2024}
 }
 ```
+
