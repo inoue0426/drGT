@@ -1,6 +1,8 @@
 # 🧬 drGT
 
-Official implementation of **drGT**, published in [BMC Bioinformatics (2026)](https://doi.org/10.1186/s12859-026-06417-z).
+Official implementation of **drGT**, published in [BMC Bioinformatics (2026)](https://doi.org/10.1186/s12859-026-06417-z).　　
+
+
 [![BMC Bioinformatics](https://img.shields.io/badge/BMC%20Bioinformatics-2026-0073B1)](https://doi.org/10.1186/s12859-026-06417-z)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue)](pyproject.toml)
