@@ -1,6 +1,6 @@
 # 🧬 drGT
 
-Official implementation of **drGT**, published in [BMC Bioinformatics (2026)](https://doi.org/10.1186/s12859-026-06417-z).　　
+Official implementation of **drGT: interpretable drug response prediction with attention-guided gene attribution on a drug-cell-gene heterogeneous graph**, published in [BMC Bioinformatics (2026)](https://doi.org/10.1186/s12859-026-06417-z).　　
 
 
 [![BMC Bioinformatics](https://img.shields.io/badge/BMC%20Bioinformatics-2026-0073B1)](https://doi.org/10.1186/s12859-026-06417-z)
