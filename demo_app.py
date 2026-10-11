@@ -11,7 +11,6 @@ from drGT.load_data import load_data
 from drGT.myutils import get_all_edges_and_labels, get_model_params
 from drGT.sampler import BalancedSampler
 
-
 ROOT = Path(__file__).resolve().parent
 CHECKPOINT = ROOT / "best_model_nci.pt"
 
@@ -25,8 +24,16 @@ def prepare():
         "test1", "nci", "Transformer", config_dir=str(ROOT / "configs")
     ).copy()
     (
-        responses, missing, drug_features, cell_features, gene_features,
-        _, _, _, cell_gene, drug_gene,
+        responses,
+        missing,
+        drug_features,
+        cell_features,
+        gene_features,
+        _,
+        _,
+        _,
+        cell_gene,
+        drug_gene,
     ) = load_data("nci", is_zero_pad=params["is_zero_pad"])
     params.update(
         n_drug=drug_features.shape[0],
@@ -50,8 +57,18 @@ def prepare():
     for choices in by_cell.values():
         choices.sort()
     return (
-        params, responses, missing, drug_features, cell_features, gene_features,
-        cell_gene, drug_gene, edges, labels, by_cell, pair_to_index,
+        params,
+        responses,
+        missing,
+        drug_features,
+        cell_features,
+        gene_features,
+        cell_gene,
+        drug_gene,
+        edges,
+        labels,
+        by_cell,
+        pair_to_index,
     )
 
 
@@ -62,8 +79,18 @@ def available_drugs(cell):
 
 def predict(cell, drug):
     (
-        params, responses, missing, drug_features, cell_features, gene_features,
-        cell_gene, drug_gene, edges, labels, _, pair_to_index,
+        params,
+        responses,
+        missing,
+        drug_features,
+        cell_features,
+        gene_features,
+        cell_gene,
+        drug_gene,
+        edges,
+        labels,
+        _,
+        pair_to_index,
     ) = prepare()
     selected = pair_to_index.get((cell, drug))
     if selected is None:
@@ -74,8 +101,17 @@ def predict(cell, drug):
     train_indices = np.arange(len(edges))
     train_indices = train_indices[train_indices != selected]
     sampler = BalancedSampler(
-        responses, edges, labels, train_indices, np.array([selected]),
-        missing, drug_features, cell_features, gene_features, cell_gene, drug_gene,
+        responses,
+        edges,
+        labels,
+        train_indices,
+        np.array([selected]),
+        missing,
+        drug_features,
+        cell_features,
+        gene_features,
+        cell_gene,
+        drug_gene,
     )
     probabilities, _, _ = drGT.predict(str(CHECKPOINT), sampler, params)
     probability = float(np.asarray(probabilities).reshape(-1)[0])
@@ -94,12 +130,16 @@ def build_demo():
         )
         with gr.Row():
             cell = gr.Dropdown(
-                choices=list(by_cell), value=first_cell,
-                label="Cell line", filterable=True,
+                choices=list(by_cell),
+                value=first_cell,
+                label="Cell line",
+                filterable=True,
             )
             drug = gr.Dropdown(
-                choices=by_cell[first_cell], value=by_cell[first_cell][0],
-                label="Drug", filterable=True,
+                choices=by_cell[first_cell],
+                value=by_cell[first_cell][0],
+                label="Drug",
+                filterable=True,
             )
         result = gr.Number(label="Predicted sensitivity probability", precision=4)
         cell.change(available_drugs, inputs=cell, outputs=drug)
