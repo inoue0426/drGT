@@ -79,6 +79,20 @@ You can use this pretrained model for existing drugs and cell lines. See [`cell_
 
 ---
 
+## 🌐 Browser demo (local)
+
+Run the pretrained NCI model in a browser with [Gradio](https://www.gradio.app/):
+
+```bash
+uv run --python 3.10 --with gradio python demo_app.py
+```
+
+Open the local URL shown in your terminal (usually `http://127.0.0.1:7860`). Select an NCI cell line and an available drug, then click **Predict**. The first launch prepares the NCI dataset and may take a while; CPU inference may also be slow. This starts a local server; it does not publish a public website.
+
+The displayed number is the pretrained model's predicted probability of sensitivity (label 1), not a measured response. The selected pair's response is removed from the graph assembled for that request. The checkpoint's original training split has not been verified, so this interactive output is **not** a held-out benchmark or independent validation. The demo only offers drug–cell pairs with observed responses in the bundled NCI data.
+
+---
+
 ## ⚙️ Interactive Use with Jupyter
 
 To analyze results or explore predictions interactively:
